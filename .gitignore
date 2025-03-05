@@ -1,0 +1,50 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build and Cache Files
+dist/
+build/
+.cache/
+out/
+.next/
+coverage/
+
+# Database & Temporary Files
+*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+mysql-backups/
+dump.sql
+
+# TypeScript Compiled Files
+*.tsbuildinfo
+*.d.ts
+
+# Editor and System Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# cPanel & Deployment
+cpanel-logs/
+uploads/
