@@ -14,8 +14,9 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
+// 🔹 Block public access to the API root (`/`)
 app.get("/", (req, res) => {
-  res.send("TDAC API is running...");
+  res.status(403).json({ message: "Forbidden" });
 });
 
 const PORT = process.env.PORT || 5000;
