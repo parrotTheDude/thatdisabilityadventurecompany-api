@@ -12,6 +12,10 @@ interface User {
   gender: string;
 }
 
+interface GenderRow {
+  gender: string;
+}
+
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
@@ -184,9 +188,10 @@ export const exportUsers = async (req: Request, res: Response): Promise<void> =>
 
 export const getUserGenders = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [rows]: [RowDataPacket[], any] = await db.query("SELECT DISTINCT gender FROM users WHERE gender IS NOT NULL AND gender != ''");
+    const [rows] = await db.query<RowDataPacket[]>("SELECT DISTINCT gender FROM users WHERE gender IS NOT NULL AND gender != ''");
 
-    const genderList = rows.map((g) => g.gender); 
+    // ✅ Ensure TypeScript recognizes that `rows` contains `gender` property
+    const genderList = (rows as GenderRow[]).map((g) => g.gender);
 
     res.json(genderList);
   } catch (error) {

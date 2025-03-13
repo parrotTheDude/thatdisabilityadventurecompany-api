@@ -8,7 +8,7 @@ import {
     createUser,
     updateUser,
     getUserProfile,
-    getUserGenders
+    getUserGenders,
   } from "../controllers/userController";
 import { getSubscriptionLists } from "../controllers/subscriptionController";
 import { protect } from "../middlewares/authMiddleware";
