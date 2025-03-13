@@ -34,29 +34,15 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { search, sortBy = "created_at", order = "DESC", page = 1, limit = 10 } = req.query;
-    const offset = (Number(page) - 1) * Number(limit);
+    const [users] = await db.query<User[] & RowDataPacket[]>(
+      "SELECT id, name, last_name, email, user_type, gender FROM users"
+    );
 
-    let query = "SELECT id, name, last_name, email, user_type, gender, created_at FROM users";
-    let queryParams: any[] = [];
-
-    if (search) {
-      query += " WHERE name LIKE ? OR last_name LIKE ? OR email LIKE ?";
-      queryParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
-    }
-
-    query += ` ORDER BY ${sortBy} ${order} LIMIT ? OFFSET ?`;
-    queryParams.push(Number(limit), offset);
-
-    console.log("🔍 Fetching users with query:", query); // ✅ Debug Query
-    console.log("🔹 Query Params:", queryParams); // ✅ Debug Params
-
-    const [users] = await db.query(query, queryParams);
     res.json(users);
   } catch (error) {
-    console.error("❌ Database error:", error);
+    console.error("❌ Error fetching users:", error);
     res.status(500).json({ message: "Failed to fetch users" });
   }
 };
