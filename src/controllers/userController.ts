@@ -116,22 +116,31 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.id;
     const { name, last_name, email, user_type, gender, subscriptions } = req.body;
 
-    await db.query("UPDATE users SET name=?, last_name=?, email=?, user_type=?, gender=? WHERE id=?", [name, last_name, email, user_type, gender, userId]);
+    console.log("🔄 Updating user:", req.body); // ✅ Debugging log
 
-    if (subscriptions) {
-      await db.query("DELETE FROM subscriptions WHERE user_id=?", [userId]);
-      for (const list_name of subscriptions) {
-        await db.query("INSERT INTO subscriptions (user_id, list_name, subscribed) VALUES (?, ?, ?)", [userId, list_name, true]);
-      }
+    // ✅ Update user details
+    await db.query(
+      "UPDATE users SET name=?, last_name=?, email=?, user_type=?, gender=? WHERE id=?",
+      [name, last_name, email, user_type, gender, userId]
+    );
+
+    // ✅ Remove existing subscriptions
+    await db.query("DELETE FROM subscriptions WHERE user_id=?", [userId]);
+
+    // ✅ Insert new subscriptions
+    if (subscriptions && subscriptions.length > 0) {
+      const insertValues = subscriptions.map((list_name: string) => [userId, list_name, 1]);
+      await db.query("INSERT INTO subscriptions (user_id, list_name, subscribed) VALUES ?", [insertValues]);
     }
 
     res.json({ message: "User updated successfully" });
   } catch (error) {
+    console.error("❌ Failed to update user:", error);
     res.status(500).json({ message: "Failed to update user" });
   }
 };
