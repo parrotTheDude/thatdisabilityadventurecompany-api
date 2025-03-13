@@ -129,13 +129,40 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       [name, last_name, email, user_type, gender, userId]
     );
 
-    // ✅ Remove existing subscriptions
-    await db.query("DELETE FROM subscriptions WHERE user_id=?", [userId]);
-
-    // ✅ Insert new subscriptions
     if (subscriptions && subscriptions.length > 0) {
-      const insertValues = subscriptions.map((list_name: string) => [userId, list_name, 1]);
-      await db.query("INSERT INTO subscriptions (user_id, list_name, subscribed) VALUES ?", [insertValues]);
+      for (const list_name of subscriptions) {
+        // ✅ Check if the subscription already exists
+        const [existingSub] = await db.query(
+          "SELECT id FROM subscriptions WHERE user_id = ? AND list_name = ?",
+          [userId, list_name]
+        );
+
+        if ((existingSub as any[]).length > 0) {
+          // ✅ If it exists, update `subscribed` to 1
+          await db.query(
+            "UPDATE subscriptions SET subscribed = ?, updated_at = NOW() WHERE user_id = ? AND list_name = ?",
+            [1, userId, list_name]
+          );
+        } else {
+          // ✅ If it doesn't exist, insert a new subscription
+          await db.query(
+            "INSERT INTO subscriptions (user_id, list_name, subscribed, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
+            [userId, list_name, 1]
+          );
+        }
+      }
+
+      // ✅ Mark subscriptions not in the new list as unsubscribed
+      await db.query(
+        "UPDATE subscriptions SET subscribed = 0 WHERE user_id = ? AND list_name NOT IN (?)",
+        [userId, subscriptions]
+      );
+    } else {
+      // ✅ If no subscriptions are provided, mark all as unsubscribed
+      await db.query(
+        "UPDATE subscriptions SET subscribed = 0 WHERE user_id = ?",
+        [userId]
+      );
     }
 
     res.json({ message: "User updated successfully" });
