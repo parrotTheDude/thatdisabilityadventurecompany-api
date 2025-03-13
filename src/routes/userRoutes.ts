@@ -7,7 +7,8 @@ import {
     getUserById,
     createUser,
     updateUser,
-    getUserProfile
+    getUserProfile,
+    getUserGenders
   } from "../controllers/userController";
 import { getSubscriptionLists } from "../controllers/subscriptionController";
 import { protect } from "../middlewares/authMiddleware";
@@ -21,6 +22,7 @@ router.get("/export", protect, exportUsers);
 router.get("/types", protect, getUserTypes);
 router.get("/:id", protect, getUserById);
 router.post("/", protect, createUser);
+router.get("/genders", protect, getUserGenders);
 router.put("/:id", protect, updateUser);
 router.get("/subscriptions/lists", protect, getSubscriptionLists);
 

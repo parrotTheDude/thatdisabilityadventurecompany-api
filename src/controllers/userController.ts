@@ -181,3 +181,16 @@ export const exportUsers = async (req: Request, res: Response): Promise<void> =>
     res.status(500).json({ message: "Failed to export users" });
   }
 };
+
+export const getUserGenders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [rows]: [RowDataPacket[], any] = await db.query("SELECT DISTINCT gender FROM users WHERE gender IS NOT NULL AND gender != ''");
+
+    const genderList = rows.map((g) => g.gender); 
+
+    res.json(genderList);
+  } catch (error) {
+    console.error("❌ Error fetching genders:", error);
+    res.status(500).json({ message: "Failed to fetch genders" });
+  }
+};
