@@ -22,3 +22,12 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const [users] = await db.query("SELECT id, name, email FROM users"); // ✅ Fetch users from DB
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
