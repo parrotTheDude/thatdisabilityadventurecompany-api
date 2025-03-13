@@ -1,10 +1,25 @@
 import express from "express";
-import { getUserProfile, getAllUsers } from "../controllers/userController"; // ✅ Added getAllUsers
+import {
+    getAllUsers,
+    searchUsers,
+    exportUsers,
+    getUserTypes,
+    getUserById,
+    createUser,
+    updateUser,
+  } from "../controllers/userController";
+import { getSubscriptionLists } from "../controllers/subscriptionController";
 import { protect } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.get("/me", protect, getUserProfile);
-router.get("/", protect, getAllUsers); // ✅ Now properly imported
+router.get("/", protect, getAllUsers);
+router.get("/search", protect, searchUsers);
+router.get("/export", protect, exportUsers);
+router.get("/types", protect, getUserTypes);
+router.get("/:id", protect, getUserById);
+router.post("/", protect, createUser);
+router.put("/:id", protect, updateUser);
+router.get("/subscriptions/lists", protect, getSubscriptionLists);
 
 export default router;
