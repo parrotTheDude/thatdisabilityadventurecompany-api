@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
+import emailRoutes from "./routes/emailRoutes";
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/emails", emailRoutes);
 
 // 🔹 Block public access to the API root (`/`)
 app.get("/", (req, res) => {
