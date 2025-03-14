@@ -30,7 +30,7 @@ export const editEmailTemplate = async (req: Request, res: Response): Promise<vo
   };
 
 // ✅ Configure Postmark Client
-const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY ?? "");
+const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY || "");
 
 // ✅ Send Bulk Email
 export const sendBulkEmail = async (req: Request, res: Response): Promise<void> => {
