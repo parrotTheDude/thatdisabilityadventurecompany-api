@@ -29,68 +29,68 @@ export const editEmailTemplate = async (req: Request, res: Response): Promise<vo
     }
   };
 
-// ✅ Configure Postmark Client
-const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
+// // ✅ Configure Postmark Client
+// const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY || "");
 
-// ✅ Send Bulk Email
-export const sendBulkEmail = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { list_name, template_id, variables } = req.body;
+// // ✅ Send Bulk Email
+// export const sendBulkEmail = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { list_name, template_id, variables } = req.body;
 
-    if (!list_name || !template_id) {
-      res.status(400).json({ message: "List name and template ID are required" });
-      return;
-    }
+//     if (!list_name || !template_id) {
+//       res.status(400).json({ message: "List name and template ID are required" });
+//       return;
+//     }
 
-    // ✅ Fetch Subscribers from DB
-    const [subscribers] = await db.query(
-      "SELECT u.email FROM subscriptions s JOIN users u ON s.user_id = u.id WHERE s.list_name = ? AND s.subscribed = 1",
-      [list_name]
-    );
+//     // ✅ Fetch Subscribers from DB
+//     const [subscribers] = await db.query(
+//       "SELECT u.email FROM subscriptions s JOIN users u ON s.user_id = u.id WHERE s.list_name = ? AND s.subscribed = 1",
+//       [list_name]
+//     );
 
-    if ((subscribers as any[]).length === 0) {
-      res.status(404).json({ message: "No subscribers found for this list" });
-      return;
-    }
+//     if ((subscribers as any[]).length === 0) {
+//       res.status(404).json({ message: "No subscribers found for this list" });
+//       return;
+//     }
 
-    // ✅ Fetch Email Template
-    const [templateData] = await db.query("SELECT content FROM email_templates WHERE id = ?", [template_id]);
-    if ((templateData as any[]).length === 0) {
-      res.status(404).json({ message: "Template not found" });
-      return;
-    }
+//     // ✅ Fetch Email Template
+//     const [templateData] = await db.query("SELECT content FROM email_templates WHERE id = ?", [template_id]);
+//     if ((templateData as any[]).length === 0) {
+//       res.status(404).json({ message: "Template not found" });
+//       return;
+//     }
 
-    let emailContent = (templateData as any[])[0].content;
+//     let emailContent = (templateData as any[])[0].content;
 
-    // ✅ Replace Variables in Email Template
-    Object.keys(variables).forEach((key) => {
-      emailContent = emailContent.replace(new RegExp(`{{${key}}}`, "g"), variables[key]);
-    });
+//     // ✅ Replace Variables in Email Template
+//     Object.keys(variables).forEach((key) => {
+//       emailContent = emailContent.replace(new RegExp(`{{${key}}}`, "g"), variables[key]);
+//     });
 
-    // ✅ Prepare and Send Emails via Postmark
-    const emailPromises = (subscribers as { email: string }[]).map(async (subscriber) => {
-      await postmarkClient.sendEmail({
-        From: "no-reply@yourdomain.com",
-        To: subscriber.email,
-        Subject: "Your Custom Email",
-        HtmlBody: emailContent,
-      });
+//     // ✅ Prepare and Send Emails via Postmark
+//     const emailPromises = (subscribers as { email: string }[]).map(async (subscriber) => {
+//       await postmarkClient.sendEmail({
+//         From: "no-reply@yourdomain.com",
+//         To: subscriber.email,
+//         Subject: "Your Custom Email",
+//         HtmlBody: emailContent,
+//       });
 
-      // ✅ Log Sent Emails
-      await db.query(
-        "INSERT INTO email_logs (list_name, email, template_id, sent_at) VALUES (?, ?, ?, NOW())",
-        [list_name, subscriber.email, template_id]
-      );
-    });
+//       // ✅ Log Sent Emails
+//       await db.query(
+//         "INSERT INTO email_logs (list_name, email, template_id, sent_at) VALUES (?, ?, ?, NOW())",
+//         [list_name, subscriber.email, template_id]
+//       );
+//     });
 
-    await Promise.all(emailPromises);
+//     await Promise.all(emailPromises);
 
-    res.json({ message: "Emails sent successfully" });
-  } catch (error) {
-    console.error("❌ Error sending bulk email:", error);
-    res.status(500).json({ message: "Failed to send emails" });
-  }
-};
+//     res.json({ message: "Emails sent successfully" });
+//   } catch (error) {
+//     console.error("❌ Error sending bulk email:", error);
+//     res.status(500).json({ message: "Failed to send emails" });
+//   }
+// };
 
 // ✅ View Sent Emails (Logs)
 export const getSentEmails = async (req: Request, res: Response): Promise<void> => {
