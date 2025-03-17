@@ -20,6 +20,15 @@ app.use("/api/users", userRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/emails", emailRoutes);
 
+app.use(
+  cors({
+    origin: ["https://accounts.thatdisabilityadventurecompany.com.au", "http://localhost:3000"], // ✅ Allow frontend domains
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 // 🔹 Block public access to the API root (`/`)
 app.get("/", (req, res) => {
   res.status(403).json({ message: "Forbidden" });
