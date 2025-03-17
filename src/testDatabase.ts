@@ -5,7 +5,7 @@ dotenv.config(); // Load environment variables
 
 const testDatabaseConnection = async () => {
   try {
-    // Create a connection pool
+    // Create a connection pool with utf8mb4 support
     const db = mysql.createPool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
@@ -14,6 +14,7 @@ const testDatabaseConnection = async () => {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      charset: "utf8mb4",
     });
 
     console.log("🔍 Testing MySQL database connection...");
