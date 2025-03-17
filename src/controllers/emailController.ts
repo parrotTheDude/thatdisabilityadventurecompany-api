@@ -3,11 +3,13 @@ import db from "../config/database";
 import axios from "axios";
 import postmark from "postmark";
 
-const postmarkApiKey = process.env.POSTMARK_API_KEY || "";
+const postmarkApiKey = process.env.POSTMARK_API_KEY;
 if (!postmarkApiKey) {
-  console.error("❌ POSTMARK_API_KEY is missing in environment variables!");
+  console.error("❌ POSTMARK_API_KEY is missing! The server cannot send emails.");
+  process.exit(1); // ✅ Prevents the server from running without an API key
 }
 
+// ✅ Ensure Postmark is correctly initialized
 const postmarkClient = new postmark.ServerClient(postmarkApiKey);
 
 // ✅ Get All Email Templates (Fetched from Database or BeeFree API)
