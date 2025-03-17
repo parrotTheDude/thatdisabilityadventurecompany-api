@@ -1,10 +1,11 @@
 import express from "express";
-import { getEmailTemplates, addEmailTemplate } from "../controllers/emailController";
+import { getEmailTemplates, getEmailTemplateById, editEmailTemplate } from "../controllers/emailController";
 import { protect } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.get("/templates", protect, getEmailTemplates); // ✅ Fetch templates
-router.post("/templates", protect, addEmailTemplate); // ✅ Add new template
+router.get("/templates", protect, getEmailTemplates); // ✅ Fetch all templates
+router.get("/templates/:id", protect, getEmailTemplateById); // ✅ Fetch a single template
+router.put("/templates/:id", protect, editEmailTemplate); // ✅ Edit a template
 
 export default router;

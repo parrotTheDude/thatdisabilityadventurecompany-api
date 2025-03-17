@@ -31,3 +31,39 @@ export const addEmailTemplate = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ message: "Failed to save email template" });
   }
 };
+
+export const getEmailTemplateById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const [templates] = await db.query("SELECT id, name, content FROM email_templates WHERE id = ?", [id]);
+
+    if ((templates as any[]).length === 0) {
+      res.status(404).json({ message: "Template not found" });
+      return;
+    }
+
+    res.json((templates as any[])[0]);
+  } catch (error) {
+    console.error("❌ Error fetching email template:", error);
+    res.status(500).json({ message: "Failed to fetch email template" });
+  }
+};
+
+export const editEmailTemplate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { name, content } = req.body;
+
+    if (!name || !content) {
+      res.status(400).json({ message: "Name and content are required" });
+      return;
+    }
+
+    await db.query("UPDATE email_templates SET name = ?, content = ?, updated_at = NOW() WHERE id = ?", [name, content, id]);
+
+    res.json({ message: "Email template updated successfully" });
+  } catch (error) {
+    console.error("❌ Error updating email template:", error);
+    res.status(500).json({ message: "Failed to update email template" });
+  }
+};
