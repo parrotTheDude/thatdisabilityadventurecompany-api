@@ -1,12 +1,14 @@
 import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import path from "path";
+
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
 import emailRoutes from "./routes/emailRoutes";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app = express();
 
 app.use(cors());
