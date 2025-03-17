@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import db from "../config/database";
 import axios from "axios";
-import postmark from "postmark";
+
+const postmark = require("postmark");
 
 const postmarkApiKey = process.env.POSTMARK_API_KEY;
 if (!postmarkApiKey) {
