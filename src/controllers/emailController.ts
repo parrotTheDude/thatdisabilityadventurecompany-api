@@ -3,6 +3,13 @@ import db from "../config/database";
 import axios from "axios";
 import postmark from "postmark";
 
+const postmarkApiKey = process.env.POSTMARK_API_KEY || "";
+if (!postmarkApiKey) {
+  console.error("❌ POSTMARK_API_KEY is missing in environment variables!");
+}
+
+const postmarkClient = new postmark.ServerClient(postmarkApiKey);
+
 // ✅ Get All Email Templates (Fetched from Database or BeeFree API)
 export const getEmailTemplates = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -65,5 +72,28 @@ export const editEmailTemplate = async (req: Request, res: Response): Promise<vo
   } catch (error) {
     console.error("❌ Error updating email template:", error);
     res.status(500).json({ message: "Failed to update email template" });
+  }
+};
+
+export const sendTestEmail = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, templateContent } = req.body;
+
+    if (!email || !templateContent) {
+      res.status(400).json({ message: "Email and template content are required" });
+      return;
+    }
+
+    await postmarkClient.sendEmail({
+      From: "no-reply@yourdomain.com",
+      To: email,
+      Subject: "Test Email",
+      HtmlBody: templateContent,
+    });
+
+    res.json({ message: "Test email sent successfully!" });
+  } catch (error) {
+    console.error("❌ Failed to send test email:", error);
+    res.status(500).json({ message: "Failed to send test email." });
   }
 };
